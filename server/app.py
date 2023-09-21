@@ -2,6 +2,7 @@
 
 from flask import Flask, make_response, jsonify
 from flask_migrate import Migrate
+from sqlalchemy import desc
 
 from models import db, Bakery, BakedGood
 
@@ -126,7 +127,7 @@ def most_expensive_baked_good():
     }
     response = make_response(bakery_good, 200)
     return response'''
-    all_bakeries = []
+    '''all_bakeries = []
     for bakery in BakedGood.query.order_by(BakedGood.price.desc()).limit(1):
         bakery_dict = {
             "bakery_id": bakery.bakery_id,
@@ -139,6 +140,19 @@ def most_expensive_baked_good():
         all_bakeries.append(bakery_dict)
 
     response = make_response(jsonify(all_bakeries), 200)
+    response.headers["Content-Type"] = "application/json"
+    return response'''
+    most_expensive = BakedGood.query.order_by(desc(BakedGood.price)).first()
+
+    bakery_dict = {
+        "bakery_id": most_expensive.bakery_id,
+        "created_at": most_expensive.created_at,
+        "id": most_expensive.id,
+        "name": most_expensive.name,
+        "price": most_expensive.price,
+        "updated_at": most_expensive.updated_at
+    }
+    response = make_response(jsonify(bakery_dict), 200)
     response.headers["Content-Type"] = "application/json"
     return response
 
